@@ -1,4 +1,4 @@
-const { operate, parseNumber, formatResult } = require('../calculator');
+const { operate, parseNumber, formatResult, modulo, power, squareRoot } = require('../calculator');
 
 describe('calculator operate()', () => {
   test('addition: 2 + 3 = 5', () => {
@@ -25,8 +25,35 @@ describe('calculator operate()', () => {
     expect(() => operate('/', 1, 0)).toThrow('division-by-zero');
   });
 
+  test('modulo: 5 % 2 = 1', () => {
+    expect(operate('%', 5, 2)).toBe(1);
+    expect(operate('mod', 5, 2)).toBe(1);
+    expect(modulo(5,2)).toBe(1);
+  });
+
+  test('modulo by zero throws', () => {
+    expect(() => operate('%', 1, 0)).toThrow('division-by-zero');
+    expect(() => modulo(1,0)).toThrow('division-by-zero');
+  });
+
+  test('power: 2 ^ 3 = 8', () => {
+    expect(operate('pow', 2, 3)).toBe(8);
+    expect(operate('**', 2, 3)).toBe(8);
+    expect(power(2,3)).toBe(8);
+  });
+
+  test('square root: sqrt 16 = 4', () => {
+    expect(operate('sqrt', 16)).toBe(4);
+    expect(squareRoot(16)).toBe(4);
+  });
+
+  test('square root of negative throws', () => {
+    expect(() => operate('sqrt', -4)).toThrow('negative-number');
+    expect(() => squareRoot(-9)).toThrow('negative-number');
+  });
+
   test('unknown operation throws', () => {
-    expect(() => operate('pow', 2, 3)).toThrow('unknown-op');
+    expect(() => operate('foobar', 2, 3)).toThrow('unknown-op');
   });
 
   test('invalid numbers throw', () => {
