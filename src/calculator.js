@@ -48,7 +48,36 @@ function formatResult(n) {
  * - a, b: numeric operands
  * Returns numeric result or throws an Error for invalid operations (e.g., divide by zero)
  */
+// New helper functions requested:
+// 1. modulo(a, b) - returns the remainder of a divided by b
+// 2. power(base, exponent) - returns base raised to the exponent
+// 3. squareRoot(n) - returns the square root of n with error handling for negative numbers
+
+function modulo(a, b) {
+  if (!Number.isFinite(a) || !Number.isFinite(b)) throw new Error('invalid-number');
+  if (b === 0) throw new Error('division-by-zero');
+  return a % b;
+}
+
+function power(base, exponent) {
+  if (!Number.isFinite(base) || !Number.isFinite(exponent)) throw new Error('invalid-number');
+  return Math.pow(base, exponent);
+}
+
+function squareRoot(n) {
+  if (!Number.isFinite(n)) throw new Error('invalid-number');
+  if (n < 0) throw new Error('negative-number');
+  return Math.sqrt(n);
+}
+
 function operate(op, a, b) {
+  // Allow undefined "b" for single-operand ops like sqrt
+  if (op === 'sqrt') {
+    // allow a to be the single operand
+    if (!Number.isFinite(a)) throw new Error('invalid-number');
+    return squareRoot(a);
+  }
+
   if (!Number.isFinite(a) || !Number.isFinite(b)) {
     throw new Error('invalid-number');
   }
@@ -69,6 +98,13 @@ function operate(op, a, b) {
     case '/':
       if (b === 0) throw new Error('division-by-zero');
       return a / b;
+    case 'mod':
+    case '%':
+      return modulo(a, b);
+    case 'pow':
+    case '**':
+    case '^':
+      return power(a, b);
     default:
       throw new Error('unknown-op');
   }
@@ -121,4 +157,8 @@ module.exports = {
   parseNumber,
   operate,
   formatResult,
+  // new helpers
+  modulo,
+  power,
+  squareRoot,
 };
