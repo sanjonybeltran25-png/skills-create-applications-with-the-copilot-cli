@@ -42,6 +42,38 @@ function formatResult(n) {
   return Number(n.toPrecision(12)).toString();
 }
 
+/**
+ * operate(op, a, b)
+ * - op: operation string ('add','+','sub','-','mul','*','x','div','/')
+ * - a, b: numeric operands
+ * Returns numeric result or throws an Error for invalid operations (e.g., divide by zero)
+ */
+function operate(op, a, b) {
+  if (!Number.isFinite(a) || !Number.isFinite(b)) {
+    throw new Error('invalid-number');
+  }
+
+  switch (op) {
+    case 'add':
+    case '+':
+      return a + b;
+    case 'sub':
+    case '-':
+      return a - b;
+    case 'mul':
+    case '*':
+    case 'x':
+    case 'X':
+      return a * b;
+    case 'div':
+    case '/':
+      if (b === 0) throw new Error('division-by-zero');
+      return a / b;
+    default:
+      throw new Error('unknown-op');
+  }
+}
+
 function main(argv) {
   if (argv.length < 3) {
     printHelp();
@@ -65,40 +97,28 @@ function main(argv) {
     process.exit(2);
   }
 
-  let result;
-  switch (op) {
-    case 'add':
-    case '+':
-      result = a + b;
-      break;
-    case 'sub':
-    case '-':
-      result = a - b;
-      break;
-    case 'mul':
-    case '*':
-    case 'x':
-    case 'X':
-      result = a * b;
-      break;
-    case 'div':
-    case '/':
-      if (b === 0) {
-        console.error('Error: division by zero.');
-        process.exit(3);
-      }
-      result = a / b;
-      break;
-    default:
-      console.error(`Error: unknown operation '${op}'.`);
-      printHelp();
-      process.exit(4);
+  try {
+    const result = operate(op, a, b);
+    console.log(formatResult(result));
+  } catch (err) {
+    if (err.message === 'division-by-zero') {
+      console.error('Error: division by zero.');
+      process.exit(3);
+    }
+    console.error(`Error: ${err.message}`);
+    printHelp();
+    process.exit(4);
   }
-
-  console.log(formatResult(result));
 }
 
 if (require.main === module) {
   // slice off: node, script path; then args
   main(process.argv.slice(2));
 }
+
+// Export functions for testing
+module.exports = {
+  parseNumber,
+  operate,
+  formatResult,
+};
